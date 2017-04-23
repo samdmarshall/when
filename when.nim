@@ -3,11 +3,24 @@ import times
 import strutils
 import terminal
 
+proc daySuffix(day: string): string =
+  let day_end_digit = $day[day.high()]
+  case day_end_digit
+  of "1":
+    return "st"
+  of "2":
+    return "nd"
+  of "3":
+    return "rd"
+  else:
+    return "th"
+
 addQuitProc(resetAttributes)
 
 let local_time = getLocalTime(getTime())
 
 let day = local_time.format("d")
+let suffix = day.daySuffix()
 let month = local_time.format("MMMM")
 let year = local_time.format("yyyy")
 
@@ -17,6 +30,7 @@ let minute = local_time.format("mm")
 stdout.write("it is the ")
 stdout.setForegroundColor(fgBlue)
 stdout.write(day)
+stdout.write(suffix)
 stdout.resetAttributes()
 stdout.write(" day of ")
 stdout.setForegroundColor(fgBlue)
