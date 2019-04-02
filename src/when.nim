@@ -1,4 +1,3 @@
-import posix
 import times
 import strutils
 import terminal
@@ -14,8 +13,6 @@ proc daySuffix(day: string): string =
     return "rd"
   else:
     return "th"
-
-addQuitProc(resetAttributes)
 
 let local_time = getLocalTime(getTime())
 
@@ -52,4 +49,4 @@ stdout.resetAttributes()
 stdout.write(":")
 stdout.setForegroundColor(fgGreen)
 stdout.write(minute)
-stdout.write("\n")
+stdout.resetAttributes()
