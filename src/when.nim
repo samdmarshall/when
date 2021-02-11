@@ -3,6 +3,7 @@
 # Imports
 # =======
 
+import math
 import times
 import strutils
 import terminal
@@ -45,16 +46,22 @@ template color(color: untyped, body: untyped) =
 # =========
 
 proc daySuffix(day: string): string =
-  let day_end_digit = $(day[day.high()])
-  case day_end_digit
-  of "1":
-    return "st"
-  of "2":
-    return "nd"
-  of "3":
-    return "rd"
+  let day_number = parseInt(day)
+  let tens = floorDiv(day_number, 10)
+  let remainder = floorMod(day_number, 10)
+  case tens
+  of 0, 2, 3:
+    case remainder
+    of 1:
+      result = "st"
+    of 2:
+      result = "nd"
+    of 3:
+      result = "rd"
+    else:
+      result = "th"
   else:
-    return "th"
+    result = "th"
 
 # ==========
 # Main Entry
@@ -68,16 +75,18 @@ proc main() =
   let suffix = daySuffix(day)
   let month = local_time.format("MMMM")
   let year = local_time.format("yyyy")
+  # let era = local_time.format("g")
 
   let hour = local_time.format("HH")
   let minute = local_time.format("mm")
 
   commandline:
-    option ColorFlag, string, "color", "c", "auto"
-    exitoption "help", "h", fmt"{NimblePkgName} [-h|--help] [-v|--version] [-c|--color:<auto|always|never>]"
+    option setColorFlag, string, "color", "c", "Auto"
+    exitoption "help", "h", fmt"{NimblePkgName} [-h|--help] [-v|--version] [-c|--color:<Auto|Always|Never>]"
     exitoption "version", "v", fmt"{NimblePkgName} v{NimblePkgVersion}"
 
-  var display_color = parseEnum[ColorFlagOptions](ColorFlag)
+  let color_flag_value = capitalizeAscii(setColorFlag)
+  var display_color = parseEnum[ColorFlagOptions](color_flag_value, Auto)
   if display_color == Auto:
     display_color =
       if isatty(stdout): Always
